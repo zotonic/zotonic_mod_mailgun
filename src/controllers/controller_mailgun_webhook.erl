@@ -24,7 +24,9 @@
     allowed_methods/1,
     accepted_content_types/1,
     is_authorized/1,
-    process/4
+    process/4,
+
+    handle_event/2
 ]).
 
 -include_lib("zotonic_core/include/zotonic.hrl").
@@ -38,59 +40,55 @@ accepted_content_types(Context) ->
     ], Context}.
 
 is_authorized(Context) ->
-    try
-        {Parsed, Context1} = z_controller_helper:decode_request({<<"application">>, <<"json">>, []}, Context),
-        case maps:get(<<"signature">>, Parsed, undefined) of
-            SigProps when is_map(SigProps) ->
-                MySecret = m_config:get_value(mod_mailgun, webhook_secret, Context1),
-                Sig = z_convert:to_binary( maps:get(<<"signature">>, SigProps, <<>>) ),
-                Token = z_convert:to_binary( maps:get(<<"token">>, SigProps, <<>>) ),
-                Timestamp = z_convert:to_binary( maps:get(<<"timestamp">>, SigProps, <<>>) ),
-                MyHmacSig = crypto:mac(hmac, sha256, MySecret, <<Timestamp/binary, Token/binary>>),
-                case z_string:to_lower( z_convert:to_binary( z_utils:hex_encode(MyHmacSig) ) ) of
-                    Sig ->
-                        Context2 = z_context:set(json, Parsed, Context1),
-                        {true, Context2};
-                    MySig ->
-                        lager:warning("Mailgun webhook: wrong signature ~p, expected ~p",
-                                      [ Sig, MySig ]),
-                        {false, Context1}
-                end;
-            _ ->
-                {false, Context1}
-        end
-    catch
-        _:_ ->
-            {{halt, 400}, Context}
+    {Parsed, Context1} = z_controller_helper:decode_request({<<"application">>, <<"json">>, []}, Context),
+    case maps:get(<<"signature">>, Parsed, undefined) of
+        SigProps when is_map(SigProps) ->
+            MySecret = m_config:get_value(mod_mailgun, webhook_secret, Context1),
+            Sig = z_convert:to_binary( maps:get(<<"signature">>, SigProps, <<>>) ),
+            Token = z_convert:to_binary( maps:get(<<"token">>, SigProps, <<>>) ),
+            Timestamp = z_convert:to_binary( maps:get(<<"timestamp">>, SigProps, <<>>) ),
+            MyHmacSig = crypto:mac(hmac, sha256, MySecret, <<Timestamp/binary, Token/binary>>),
+            case z_string:to_lower( z_convert:to_binary( z_utils:hex_encode(MyHmacSig) ) ) of
+                Sig ->
+                    Context2 = z_context:set(json, Parsed, Context1),
+                    {true, Context2};
+                MySig ->
+                    lager:warning("Mailgun webhook: wrong signature ~p, expected ~p",
+                                  [ Sig, MySig ]),
+                    {false, Context1}
+            end;
+        _ ->
+            lager:warning("Mailgun webhook: request without signature"),
+            {false, Context1}
     end.
 
 process(<<"POST">>, _, _, Context) ->
     Parsed = z_context:get(json, Context),
     case maps:get(<<"event-data">>, Parsed, undefined) of
         EventData when is_map(EventData) ->
-            handle_event(maps:get(<<"event">>, EventData), EventData, Context);
+            handle_event(EventData, Context);
         _ ->
             nop
     end,
     {true, Context}.
 
 
-handle_event(<<"delivered">>, EventData, _Context) ->
+handle_event(#{ <<"event">> := <<"delivered">> } = EventData, _Context) ->
     Recipient = maps:get(<<"recipient">>, EventData),
     Message = maps:get(<<"message">>, EventData),
     Headers = maps:get(<<"headers">>, Message),
     MessageId = maps:get(<<"message-id">>, Headers),
     StatusMessage = extract_status_message(maps:get(<<"delivery-status">>, EventData)),
     z_email_server:delivery_report(relayed, Recipient, MessageId, StatusMessage);
-handle_event(<<"opened">>, EventData, Context) ->
+handle_event(#{ <<"event">> := <<"opened">> } = EventData, Context) ->
     Recipient = maps:get(<<"recipient">>, EventData),
     lager:info("[mailgun] Opened email by ~s", [ Recipient ]),
     m_email_status:mark_read(Recipient, Context);
-handle_event(<<"clicked">>, EventData, Context) ->
+handle_event(#{ <<"event">> := <<"clicked">> } = EventData, Context) ->
     Recipient = maps:get(<<"recipient">>, EventData),
     lager:info("[mailgun] Clicked email by ~s", [ Recipient ]),
     m_email_status:mark_read(Recipient, Context);
-handle_event(<<"failed">>, EventData, _Context) ->
+handle_event(#{ <<"event">> := <<"failed">> } = EventData, _Context) ->
     % Failure
     Recipient = maps:get(<<"recipient">>, EventData),
     Message = maps:get(<<"message">>, EventData),
@@ -109,7 +107,7 @@ handle_event(<<"failed">>, EventData, _Context) ->
             lager:warning("[mailgun] Unknown log level on failed email: ~p", [ LogLevel ]),
             ok
     end;
-handle_event(<<"complained">>, EventData, Context) ->
+handle_event(#{ <<"event">> := <<"complained">> } = EventData, Context) ->
     % Spam complaint -- disable user with a permanent failure
     Recipient = maps:get(<<"recipient">>, EventData),
     lager:warning("[mailgun] Spam complaint from ~s", [ Recipient ]),
@@ -120,11 +118,11 @@ handle_event(<<"complained">>, EventData, Context) ->
             status = <<"Spam complaint">>
         },
         Context);
-handle_event(<<"unsubscribed">>, EventData, _Context) ->
+handle_event(#{ <<"event">> := <<"unsubscribed">> } = EventData, _Context) ->
     Recipient = maps:get(<<"recipient">>, EventData, <<>>),
     lager:warning("[mailgun] Unsubscribed event from ~s [unhandled]", [ Recipient ]),
     ok;
-handle_event(_Event, _EventData, _Context) ->
+handle_event(_Event, _Context) ->
     ok.
 
 
