@@ -1,0 +1,11 @@
+{application, zotonic_mod_mailgun, [
+    {description, "Support for using mailgun "},
+    {vsn, git},
+    {registered, []},
+    {applications, [kernel, stdlib, zotonic_core]},
+    {env, []},
+    {modules, []},
+    {maintainers, []},
+    {licenses, ["All rights reserved"]},
+    {links, []}
+]}.

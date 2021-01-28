@@ -1,0 +1,3 @@
+[
+    {mailgun_webhook, [ "mailgun-webhook" ], controller_mailgun_webhook, []}
+].
