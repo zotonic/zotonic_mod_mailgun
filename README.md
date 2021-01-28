@@ -33,7 +33,8 @@ an additional panel to provide the Mailgun configurations.
 Mailgun reports sending progress back to a webhook.
 
 The webhook, to be configured at mailgun, is at: `/mailgun-webhook`
-The `mod_mailgun.mailgun_webhook_secret` config key MUST be configured for this to work.
+
+The config key `mod_mailgun.webhook_secret` MUST be configured for this to work.
 
 If mailgun reports that the email is sent to the next MTA then in the email log it is shown as `relayed`.
 
