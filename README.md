@@ -18,12 +18,15 @@ actions to mailgun.
 
 There are four configurarion keys:
 
- * `mod_mailgun.mailgun_api_url` endpoint for mailgun API requests
- * `mod_mailgun.mailgun_domain` domain as configured in mailgun
- * `mod_mailgun.mailgun_api_key` key for signing API requests
- * `mod_mailgun.mailgun_webhook_secret` key for signing calls from mailgun to our webhook
+ * `mod_mailgun.api_url` endpoint for mailgun API requests
+ * `mod_mailgun.domain` domain as configured in mailgun
+ * `mod_mailgun.api_key` key for signing API requests
+ * `mod_mailgun.webhook_secret` key for signing calls from mailgun to our webhook
 
-Besides this the relay options for email sending need to be configured:
+Besides this the relay options for email sending need to be configured.
+
+These can be configured in the admin via System > Mail settings. There will be
+an additional panel to provide the Mailgun configurations.
 
 ## Webhook
 
