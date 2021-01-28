@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# NB: Consider using poEdit <http://poedit.sourceforge.net>
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Mailgun Zotonic module\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2021-01-28 13:52+0100\n"
+"Last-Translator: Marc Worrell <marc@worrell.nl>\n"
+"Language-Team: \n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.4.2\n"
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:37
+msgid "API Key"
+msgstr "API-sleutel"
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:30
+msgid "API URL"
+msgstr "API URL"
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:12
+msgid ""
+" Configure the general proxy settings to enable Mailgun as an email relay."
+msgstr ""
+" Configureer de algemene proxy instellingen om Mailgun als e-mail relay ite "
+"gebruiken."
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:23
+msgid "Domain"
+msgstr "Domeinnaam"
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:26
+msgid "Domain as configured in Mailgun."
+msgstr "Domein zoals geconfigureerd in Mailgun."
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:33
+msgid "Endpoint for Mailgun API requests."
+msgstr "Eindpunt voor Mailgun API verzoeken."
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:40
+msgid "Key for signing API requests."
+msgstr "Key voor het ondertekenen van API verzoeken."
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:47
+msgid "Key for signing calls from Mailgun to the Zotonic webhook."
+msgstr ""
+"Key voor het ondertekenen van aanroepen van Mailgun naar de Zotonic webhook."
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:7
+msgid "Mailgun"
+msgstr "Mailgun"
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:52
+msgid "Save"
+msgstr "Bewaar"
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:60
+msgid "The webhook URL is:"
+msgstr "De webhook URL is:"
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:13
+msgid ""
+"To receive Mailgun status updates and synchronize email blocks, add the "
+"Mailgun API secrets below."
+msgstr ""
+"Om Mailgun status updates te ontvangen en e-mail blokkades te "
+"synchroniseren, voeg de Mailgun API geheimen hieronder toe."
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:44
+msgid "Webhook Secret"
+msgstr "Webhook Secret"
+
+#: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_email_panel.tpl:11
+msgid "is a relay for email."
+msgstr "is een relay voor e-mail."

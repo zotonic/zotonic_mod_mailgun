@@ -1,12 +1,16 @@
+{#
+ # Shown on the mod_admin_email configuration page
+ #}
 <div class="panel panel-default">
+    <div class="pull-right label label-default">mod_mailgun</div>
     <div class="panel-heading">
         <div class="panel-title">{_ Mailgun _}</div>
     </div>
     <div class="panel-body">
         <p>
-            {_ Mailgun can be used as a relay for email. _}
+            <a href="https://mailgun.com/">Mailgun</a> {_ is a relay for email. _}
             {_ Configure the general proxy settings to enable Mailgun as an email relay. _}
-            {_ To receive Mailgun mailing status updates and synchronize email blocks, add the mailgun API secrets below. _}
+            {_ To receive Mailgun status updates and synchronize email blocks, add the Mailgun API secrets below. _}
         </p>
 
         {% wire type="submit"
@@ -19,14 +23,14 @@
                 <label class="control-label col-md-3">{_ Domain _}</label>
                 <div class="col-md-6">
                     <input type="text" class="form-control" name="domain" value="{{ m.config.mod_mailgun.domain.value|escape }}">
-                    <p class="help-block">{_ Domain as configured in mailgun. _}</p>
+                    <p class="help-block">{_ Domain as configured in Mailgun. _}</p>
                 </div>
             </div>
             <div class="form-group row ">
                 <label class="control-label col-md-3">{_ API URL _}</label>
                 <div class="col-md-9">
                     <input type="text" class="form-control" name="api_url" value="{{ m.config.mod_mailgun.api_url.value|escape }}">
-                    <p class="help-block">{_ Endpoint for mailgun API requests. _}</p>
+                    <p class="help-block">{_ Endpoint for Mailgun API requests. _}</p>
                 </div>
             </div>
             <div class="form-group row ">
@@ -40,7 +44,7 @@
                 <label class="control-label col-md-3">{_ Webhook Secret _}</label>
                 <div class="col-md-6">
                     <input type="text" class="form-control" name="webhook_secret" value="{{ m.config.mod_mailgun.webhook_secret.value }}">
-                    <p class="help-block">{_ Key for signing calls from mailgun to the Zotonic webhook. _}</p>
+                    <p class="help-block">{_ Key for signing calls from Mailgun to the Zotonic webhook. _}</p>
                 </div>
             </div>
             <div class="form-actions row">
@@ -56,6 +60,5 @@
             <span class="glyphicon glyphicon-info-sign"></span> {_ The webhook URL is: _}
             <tt>{% url mailgun_webhook absolute_url %}</tt>
         </p>
-
     </div>
 </div>
