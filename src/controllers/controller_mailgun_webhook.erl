@@ -22,6 +22,7 @@
 
 -export([
     allowed_methods/1,
+    accepted_content_types/1,
     is_authorized/1,
     process/4
 ]).
@@ -31,38 +32,43 @@
 allowed_methods(Context) ->
     {[ <<"POST">> ], Context}.
 
+accepted_content_types(Context) ->
+    {[
+        {<<"application">>, <<"json">>, []}
+    ], Context}.
+
 is_authorized(Context) ->
-    {Body, Context1} = wrq:req_body(Context),
-    case mochijson:binary_decode(Body) of
-        {struct, Parsed} ->
-            case proplists:lookup(<<"signature">>, Parsed) of
-                {<<"signature">>, {struct, SigProps}} ->
-                    MySecret = m_config:get_value(mod_mailgun, webhook_secret, Context1),
-                    Sig = z_convert:to_binary( proplists:get_value(<<"signature">>, SigProps) ),
-                    Token = z_convert:to_binary( proplists:get_value(<<"token">>, SigProps) ),
-                    Timestamp = z_convert:to_binary( proplists:get_value(<<"timestamp">>, SigProps) ),
-                    MyHmacSig = crypto:mac(hmac, sha256, MySecret, <<Timestamp/binary, Token/binary>>),
-                    case z_string:to_lower( z_convert:to_binary( z_utils:hex_encode(MyHmacSig) ) ) of
-                        Sig ->
-                            Context2 = z_context:set(json, Parsed, Context1),
-                            {true, Context2};
-                        MySig ->
-                            lager:warning("Mailgun webhook: wrong signature ~p, expected ~p",
-                                          [ Sig, MySig ]),
-                            {false, Context1}
-                    end;
-                _ ->
-                    {false, Context1}
-            end;
-        _ ->
-            {false, Context1}
+    try
+        {Parsed, Context1} = z_controller_helper:decode_request({<<"application">>, <<"json">>, []}, Context),
+        case maps:get(<<"signature">>, Parsed, undefined) of
+            SigProps when is_map(SigProps) ->
+                MySecret = m_config:get_value(mod_mailgun, webhook_secret, Context1),
+                Sig = z_convert:to_binary( maps:get(<<"signature">>, SigProps, <<>>) ),
+                Token = z_convert:to_binary( maps:get(<<"token">>, SigProps, <<>>) ),
+                Timestamp = z_convert:to_binary( maps:get(<<"timestamp">>, SigProps, <<>>) ),
+                MyHmacSig = crypto:mac(hmac, sha256, MySecret, <<Timestamp/binary, Token/binary>>),
+                case z_string:to_lower( z_convert:to_binary( z_utils:hex_encode(MyHmacSig) ) ) of
+                    Sig ->
+                        Context2 = z_context:set(json, Parsed, Context1),
+                        {true, Context2};
+                    MySig ->
+                        lager:warning("Mailgun webhook: wrong signature ~p, expected ~p",
+                                      [ Sig, MySig ]),
+                        {false, Context1}
+                end;
+            _ ->
+                {false, Context1}
+        end
+    catch
+        _:_ ->
+            {{halt, 400}, Context}
     end.
 
 process(<<"POST">>, _, _, Context) ->
     Parsed = z_context:get(json, Context),
-    case proplists:get_value(<<"event-data">>, Parsed) of
-        {struct, EventData} ->
-            handle_event(proplists:get_value(<<"event">>, EventData), EventData, Context);
+    case maps:get(<<"event-data">>, Parsed, undefined) of
+        EventData when is_map(EventData) ->
+            handle_event(maps:get(<<"event">>, EventData), EventData, Context);
         _ ->
             nop
     end,
@@ -70,28 +76,28 @@ process(<<"POST">>, _, _, Context) ->
 
 
 handle_event(<<"delivered">>, EventData, _Context) ->
-    Recipient = proplists:get_value(<<"recipient">>, EventData),
-    {struct, Message} = proplists:get_value(<<"message">>, EventData),
-    {struct, Headers} = proplists:get_value(<<"headers">>, Message),
-    MessageId = proplists:get_value(<<"message-id">>, Headers),
-    StatusMessage = extract_status_message(proplists:get_value(<<"delivery-status">>, EventData)),
+    Recipient = maps:get(<<"recipient">>, EventData),
+    Message = maps:get(<<"message">>, EventData),
+    Headers = maps:get(<<"headers">>, Message),
+    MessageId = maps:get(<<"message-id">>, Headers),
+    StatusMessage = extract_status_message(maps:get(<<"delivery-status">>, EventData)),
     z_email_server:delivery_report(relayed, Recipient, MessageId, StatusMessage);
 handle_event(<<"opened">>, EventData, Context) ->
-    Recipient = proplists:get_value(<<"recipient">>, EventData),
+    Recipient = maps:get(<<"recipient">>, EventData),
     lager:info("[mailgun] Opened email by ~s", [ Recipient ]),
     m_email_status:mark_read(Recipient, Context);
 handle_event(<<"clicked">>, EventData, Context) ->
-    Recipient = proplists:get_value(<<"recipient">>, EventData),
+    Recipient = maps:get(<<"recipient">>, EventData),
     lager:info("[mailgun] Clicked email by ~s", [ Recipient ]),
     m_email_status:mark_read(Recipient, Context);
 handle_event(<<"failed">>, EventData, _Context) ->
     % Failure
-    Recipient = proplists:get_value(<<"recipient">>, EventData),
-    {struct, Message} = proplists:get_value(<<"message">>, EventData),
-    {struct, Headers} = proplists:get_value(<<"headers">>, Message),
-    MessageId = proplists:get_value(<<"message-id">>, Headers),
-    StatusMessage = extract_status_message(proplists:get_value(<<"delivery-status">>, EventData)),
-    case proplists:get_value(<<"log-level">>, EventData) of
+    Recipient = maps:get(<<"recipient">>, EventData),
+    Message = maps:get(<<"message">>, EventData),
+    Headers = maps:get(<<"headers">>, Message),
+    MessageId = maps:get(<<"message-id">>, Headers),
+    StatusMessage = extract_status_message(maps:get(<<"delivery-status">>, EventData)),
+    case maps:get(<<"log-level">>, EventData) of
         <<"warn">> ->
             % Temp failure
             z_email_server:delivery_report(temporary_failure, Recipient, MessageId, StatusMessage);
@@ -105,7 +111,7 @@ handle_event(<<"failed">>, EventData, _Context) ->
     end;
 handle_event(<<"complained">>, EventData, Context) ->
     % Spam complaint -- disable user with a permanent failure
-    Recipient = proplists:get_value(<<"recipient">>, EventData),
+    Recipient = maps:get(<<"recipient">>, EventData),
     lager:warning("[mailgun] Spam complaint from ~s", [ Recipient ]),
     z_notifier:notify(
         #email_failed{
@@ -115,24 +121,19 @@ handle_event(<<"complained">>, EventData, Context) ->
         },
         Context);
 handle_event(<<"unsubscribed">>, EventData, _Context) ->
-    Recipient = proplists:get_value(<<"recipient">>, EventData),
+    Recipient = maps:get(<<"recipient">>, EventData, <<>>),
     lager:warning("[mailgun] Unsubscribed event from ~s [unhandled]", [ Recipient ]),
     ok;
 handle_event(_Event, _EventData, _Context) ->
     ok.
 
 
-extract_status_message({struct, DeliveryStatus}) ->
-    case proplists:lookup(<<"message">>, DeliveryStatus) of
-        {<<"message">>, Message} when Message =/= <<>> ->
-            map_status_message(Message);
-        _ ->
-            {<<"code">>, Code} = proplists:lookup(<<"code">>, DeliveryStatus),
-            {<<"description">>, Desc} = proplists:lookup(<<"description">>, DeliveryStatus),
-            iolist_to_binary([
-                    z_convert:to_binary(Code), " ", map_status_message(Desc)
-                ])
-    end;
+extract_status_message(#{ <<"message">> := Message }) when Message =/= <<>> ->
+    map_status_message(Message);
+extract_status_message(#{ <<"code">> := Code, <<"description">> := Desc }) ->
+    iolist_to_binary([
+            z_convert:to_binary(Code), " ", map_status_message(Desc)
+        ]);
 extract_status_message(_) ->
     <<>>.
 
