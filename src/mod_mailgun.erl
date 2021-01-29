@@ -69,8 +69,8 @@ mailgun_block(Email, Context) ->
 
 is_mailgun_configured(Context) ->
     ApiUrl = z_convert:to_binary( m_config:get_value(mod_mailgun, api_url, Context) ),
-    Domain = z_convert:to_binary( m_config:get_value(mod_mailgun, domain, Context) ),
-    case {ApiUrl, Domain} of
+    ApiKey = z_convert:to_binary( m_config:get_value(mod_mailgun, api_key, Context) ),
+    case {ApiUrl, ApiKey} of
         {<<>>, <<>>} ->
             false;
         _ ->
