@@ -1,10 +1,12 @@
 {#
- # Shown on the mod_admin_email configuration page
+ # Shown on the mod_admin_config email configuration page
  #}
 <div class="panel panel-default">
-    <div class="pull-right label label-default">mod_mailgun</div>
     <div class="panel-heading">
-        <div class="panel-title">{_ Mailgun _}</div>
+        <h3 class="panel-title">
+            {_ Mailgun _}
+            <span class="text-muted pull-right">mod_mailgun</span>
+        </h3>
     </div>
     <div class="panel-body">
         <p>
