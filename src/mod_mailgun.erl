@@ -32,6 +32,8 @@
     mailgun_clear/2
     ]).
 
+-define(MAILGUN_API_URL, "https://api.mailgun.net/v3/").
+
 -include_lib("zotonic_core/include/zotonic.hrl").
 
 
@@ -92,6 +94,14 @@ mailgun_api(post, Url, Payload, Context) ->
 
 
 mailgun_api_url(Context) ->
-    URL = m_config:get_value(mod_mailgun, api_url, Context),
+    URL = case z_convert:to_binary( m_config:get_value(mod_mailgun, api_url, Context) ) of
+        <<>> ->
+            lists:flatten([
+                ?MAILGUN_API_URL,
+                z_convert:to_list( m_config:get_value(mod_mailgun, domain, Context) )
+            ]);
+        Api ->
+            Api
+    end,
     z_convert:to_list(URL).
 
