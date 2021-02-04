@@ -1,14 +1,12 @@
 {#
  # Shown on the mod_admin_config email configuration page
  #}
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            {_ Mailgun _}
-            <span class="text-muted pull-right">mod_mailgun</span>
-        </h3>
+<div class="widget">
+    <div class="widget-header">
+        {_ Mailgun _}
+        <span class="text-muted pull-right">mod_mailgun</span>
     </div>
-    <div class="panel-body">
+    <div class="widget-content">
         <p>
             <a href="https://mailgun.com/">Mailgun</a> {_ is a relay for email. _}
             {_ Configure the general proxy settings to enable Mailgun as an email relay. _}
