@@ -18,87 +18,93 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:40
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:34./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:35
 msgid ""
 "API Key"
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:32
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:29./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:30
 msgid ""
 "API URL"
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:14
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:12
 msgid ""
 " "
 "Configure the general proxy settings to enable Mailgun as an email relay."
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:25
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:31
+msgid ""
+"Default"
+msgstr ""
+""
+
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:23./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:24
 msgid ""
 "Domain"
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:28
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:25
 msgid ""
 "Domain as configured in Mailgun."
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:36
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:31
 msgid ""
 "Endpoint for Mailgun API requests."
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:43
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:36
 msgid ""
 "Key for signing API requests."
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:50
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:41
 msgid ""
 "Key for signing calls from Mailgun to the Zotonic webhook."
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:7
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:6
 msgid ""
 "Mailgun"
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:55
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:44
 msgid ""
 "Save"
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:63
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:51
 msgid ""
 "The webhook URL is:"
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:15
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:13
 msgid ""
 "To receive Mailgun status updates and synchronize email blocks, add the "
 "Mailgun API secrets below."
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:47
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:39./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:40
 msgid ""
 "Webhook Secret"
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:13
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:11
 msgid ""
 "is a relay for email."
 msgstr ""
