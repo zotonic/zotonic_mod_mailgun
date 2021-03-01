@@ -19,39 +19,29 @@
                 delegate=`mod_admin_config`
         %}
         <form id="mailgun_settings" class="form" action="postback">
-            <div class="form-group row ">
-                <label class="control-label col-md-3">{_ Domain _}</label>
-                <div class="col-md-9">
-                    <input type="text" class="form-control" name="domain" value="{{ m.config.mod_mailgun.domain.value|escape }}">
-                    <p class="help-block">{_ Domain as configured in Mailgun. _}</p>
-                </div>
+            <div class="form-group label-floating">
+                <input type="text" class="form-control" name="domain" value="{{ m.config.mod_mailgun.domain.value|escape }}" placeholder="{_ Domain _}">
+                <label class="control-label">{_ Domain _}</label>
+                <p class="help-block">{_ Domain as configured in Mailgun. _}</p>
             </div>
-            <div class="form-group row ">
-                <label class="control-label col-md-3">{_ API URL _}</label>
-                <div class="col-md-9">
-                    <input type="text" class="form-control" name="api_url" value="{{ m.config.mod_mailgun.api_url.value|escape }}"
-                    placeholder="https://api.mailgun.net/v3/[domain]">
-                    <p class="help-block">{_ Endpoint for Mailgun API requests. _}</p>
-                </div>
+            <div class="form-group label-floating">
+                <input type="text" class="form-control" name="api_url" value="{{ m.config.mod_mailgun.api_url.value|escape }}"
+                placeholder="{_ API URL _}">
+                <label class="control-label">{_ API URL _}</label>
+                <p class="help-block">{_ Endpoint for Mailgun API requests. _}<br>{_ Default _}: <tt>https://api.mailgun.net/v3/[domain]</tt></p>
             </div>
-            <div class="form-group row ">
-                <label class="control-label col-md-3">{_ API Key _}</label>
-                <div class="col-md-9">
-                    <input type="text" class="form-control" name="api_key" value="{{ m.config.mod_mailgun.api_key.value }}">
-                    <p class="help-block">{_ Key for signing API requests. _}</p>
-                </div>
+            <div class="form-group label-floating">
+                <input type="text" class="form-control" name="api_key" value="{{ m.config.mod_mailgun.api_key.value }}" placeholder="{_ API Key _}">
+                <label class="control-label">{_ API Key _}</label>
+                <p class="help-block">{_ Key for signing API requests. _}</p>
             </div>
-            <div class="form-group row ">
-                <label class="control-label col-md-3">{_ Webhook Secret _}</label>
-                <div class="col-md-9">
-                    <input type="text" class="form-control" name="webhook_secret" value="{{ m.config.mod_mailgun.webhook_secret.value }}">
-                    <p class="help-block">{_ Key for signing calls from Mailgun to the Zotonic webhook. _}</p>
-                </div>
+            <div class="form-group label-floating">
+                <input type="text" class="form-control" name="webhook_secret" value="{{ m.config.mod_mailgun.webhook_secret.value }}" placeholder="{_ Webhook Secret _}">
+                <label class="control-label">{_ Webhook Secret _}</label>
+                <p class="help-block">{_ Key for signing calls from Mailgun to the Zotonic webhook. _}</p>
             </div>
-            <div class="form-actions row">
-                <div class="col-md-offset-3 col-md-9">
-                    <button type="submit" class="btn btn-primary">{_ Save _}</button>
-                </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{_ Save _}</button>
             </div>
         </form>
 
