@@ -91,9 +91,10 @@ handle_event(#{ <<"event">> := <<"clicked">> } = EventData, Context) ->
 handle_event(#{ <<"event">> := <<"failed">> } = EventData, _Context) ->
     % Failure
     Recipient = maps:get(<<"recipient">>, EventData),
-    Message = maps:get(<<"message">>, EventData),
-    Headers = maps:get(<<"headers">>, Message),
-    MessageId = maps:get(<<"message-id">>, Headers),
+    Message = maps:get(<<"message">>, EventData, #{}),
+    Headers = maps:get(<<"headers">>, Message, #{}),
+    MessageId = maps:get(<<"message-id">>, Headers,
+            maps:get(<<"id">>, EventData)),
     StatusMessage = extract_status_message(maps:get(<<"delivery-status">>, EventData)),
     case maps:get(<<"log-level">>, EventData) of
         <<"warn">> ->
