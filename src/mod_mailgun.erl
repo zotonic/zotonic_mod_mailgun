@@ -95,7 +95,7 @@ send_email(MsgId, To, EncodedEmail, Context) ->
                 <<"id">> := MailgunMsgId,
                 <<"message">> := Message
             } = z_json:decode(Payload),
-            {ok, <<"Mailgun API: ", Message/binary, " ", MailgunMsgId/binary>>};
+            {ok, <<"[Mailgun API] ", Message/binary, " ", MailgunMsgId/binary>>};
         {ok, {{_, EAccess, _}, _Headers, _Payload}}
             when EAccess =:= 401;
                  EAccess =:= 403 ->
