@@ -47,7 +47,7 @@ observe_email_status(#email_status{}, _Context) ->
 
 
 observe_email_send_encoded(#email_send_encoded{
-            message_id = MsgId,
+            message_nr = MsgId,
             from = _From,
             to = To,
             encoded = EncodedEmail,
@@ -92,10 +92,10 @@ send_email(MsgId, To, EncodedEmail, Context) ->
     of
         {ok, {{_, 200, _}, _Headers, Payload}} ->
             #{
-                <<"id">> := MsgId,
+                <<"id">> := MailgunMsgId,
                 <<"message">> := Message
             } = z_json:decode(Payload),
-            {ok, <<Message/binary, " ", MsgId/binary>>};
+            {ok, <<Message/binary, " ", MailgunMsgId/binary>>};
         {ok, {{_, EAccess, _}, _Headers, _Payload}}
             when EAccess =:= 401;
                  EAccess =:= 403 ->
