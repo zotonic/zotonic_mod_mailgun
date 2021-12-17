@@ -32,7 +32,6 @@ msgstr ""
 
 #: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:12
 msgid ""
-" "
 "Configure the general proxy settings to enable Mailgun as an email relay."
 msgstr ""
 ""

@@ -28,7 +28,11 @@
                 <input type="text" class="form-control" name="api_url" value="{{ m.config.mod_mailgun.api_url.value|escape }}"
                 placeholder="{_ API URL _}">
                 <label class="control-label">{_ API URL _}</label>
-                <p class="help-block">{_ Endpoint for Mailgun API requests. _}<br>{_ Default _}: <tt>https://api.mailgun.net/v3/[domain]</tt></p>
+                <p class="help-block">
+                    {_ Endpoint for Mailgun API requests. _}<br>
+                    {_ Default _}: <tt>https://api.mailgun.net/v3/[domain]</tt><br>
+                    {% trans "For Europe, use: <tt>{api}</tt>" api="https://api.eu.mailgun.net/v3/[domain]" %}
+                </p>
             </div>
             <div class="form-group label-floating">
                 <input type="text" class="form-control" name="api_key" value="{{ m.config.mod_mailgun.api_key.value }}" placeholder="{_ API Key _}">

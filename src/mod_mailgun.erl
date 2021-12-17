@@ -23,7 +23,8 @@
 -mod_depends([ mod_email_status ]).
 
 -export([
-    observe_email_status/2
+    observe_email_status/2,
+    observe_email_send_encoded/2
     ]).
 
 % Testing
@@ -44,6 +45,71 @@ observe_email_status(#email_status{ is_manual = true, is_valid = true, recipient
 observe_email_status(#email_status{}, _Context) ->
     ok.
 
+
+observe_email_send_encoded(#email_send_encoded{
+            message_nr = MsgId,
+            from = _From,
+            to = To,
+            encoded = EncodedEmail,
+            options = _Options
+        },
+        Context) ->
+    case is_mailgun_configured(Context) of
+        true ->
+            send_email(MsgId, To, EncodedEmail, Context);
+        false ->
+            undefined
+    end.
+
+send_email(MsgId, To, EncodedEmail, Context) ->
+    ApiUrl = mailgun_api_url(Context),
+    lager:info("[smtp] Sending email to <~s> (~s), via mailgun \"~s\"",
+               [To, MsgId, ApiUrl]),
+    PostData = [
+        #{
+            name => <<"to">>,
+            value => To
+        },
+        #{
+            name => <<"message">>,
+            data => EncodedEmail,
+            filename => <<"message.eml">>,
+            mime => <<"message/rfc822">>
+        }
+    ],
+    {Body, CT} = z_multipart_encode:encode(PostData),
+    ApiKey = z_convert:to_binary( m_config:get_value(mod_mailgun, api_key, Context) ),
+    Auth = base64:encode_to_string( "api:" ++ z_convert:to_list(ApiKey) ),
+    Hs = [
+        {"Content-Length", integer_to_list(size(Body))},
+        {"Authorization", "Basic " ++ Auth}
+    ],
+    case httpc:request(
+        post,
+        {ApiUrl ++ "/messages.mime", Hs, z_convert:to_list(CT), Body},
+        httpc_http_options(),
+        httpc_options())
+    of
+        {ok, {{_, 200, _}, _Headers, Payload}} ->
+            #{
+                <<"id">> := MailgunMsgId,
+                <<"message">> := Message
+            } = z_json:decode(Payload),
+            {ok, <<"[Mailgun-API] ", Message/binary, " ", MailgunMsgId/binary>>};
+        {ok, {{_, EAccess, _}, _Headers, _Payload}}
+            when EAccess =:= 401;
+                 EAccess =:= 403 ->
+            {error, eacces, {temporary_failure, "mailgun.com", <<"401 error on Mailgun API - check the API key">>}};
+        {ok, {{_, Err, _}, _Headers, _Payload}}
+            when Err >= 500 ->
+            ErrB = z_convert:to_binary(Err),
+            {error, internal_error, {temporary_failure, "mailgun.com", <<ErrB/binary, " error on Mailgun API">>}};
+        {ok, {{_, Err, _}, _Headers, _Payload}} ->
+            ErrB = z_convert:to_binary(Err),
+            {error, unknown, {temporary_failure, "mailgun.com", <<ErrB/binary, " error on Mailgun API">>}};
+        {error, _} = Error ->
+            Error
+    end.
 
 mailgun_clear(Email, Context) ->
     case is_mailgun_configured(Context) of
@@ -83,14 +149,22 @@ mailgun_api(delete, Url, _Payload, Context) ->
     Hs = [
         {"Authorization", "Basic " ++ Auth}
     ],
-    httpc:request(delete, {mailgun_api_url(Context) ++ z_convert:to_list(Url), Hs}, [], []);
+    httpc:request(
+        delete,
+        {mailgun_api_url(Context) ++ z_convert:to_list(Url), Hs},
+        httpc_http_options(),
+        httpc_options());
 mailgun_api(post, Url, Payload, Context) ->
     ApiKey = z_convert:to_binary( m_config:get_value(mod_mailgun, api_key, Context) ),
     Auth = base64:encode_to_string( "api:" ++ z_convert:to_list(ApiKey) ),
     Hs = [
         {"Authorization", "Basic " ++ Auth}
     ],
-    httpc:request(post, {mailgun_api_url(Context) ++ z_convert:to_list(Url), Hs, "application/x-www-form-urlencoded", Payload}, [], []).
+    httpc:request(
+        post,
+        {mailgun_api_url(Context) ++ z_convert:to_list(Url), Hs, "application/x-www-form-urlencoded", Payload},
+        httpc_http_options(),
+        httpc_options()).
 
 
 mailgun_api_url(Context) ->
@@ -104,4 +178,20 @@ mailgun_api_url(Context) ->
             Api
     end,
     z_convert:to_list(URL).
+
+
+httpc_http_options() ->
+    [
+        {autoredirect, true},
+        {relaxed, true},
+        {timeout, 10000},
+        {connect_timeout, 2000}
+    ].
+
+httpc_options() ->
+    [
+        {sync, true},
+        {body_format, binary}
+    ].
+
 
