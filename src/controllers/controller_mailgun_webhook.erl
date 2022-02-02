@@ -53,12 +53,12 @@ is_authorized(Context) ->
                     Context2 = z_context:set(json, Parsed, Context1),
                     {true, Context2};
                 MySig ->
-                    lager:warning("Mailgun webhook: wrong signature ~p, expected ~p",
+                    ?LOG_WARNING("Mailgun webhook: wrong signature ~p, expected ~p",
                                   [ Sig, MySig ]),
                     {false, Context1}
             end;
         _ ->
-            lager:warning("Mailgun webhook: request without signature"),
+            ?LOG_WARNING("Mailgun webhook: request without signature"),
             {false, Context1}
     end.
 
@@ -82,11 +82,11 @@ handle_event(#{ <<"event">> := <<"delivered">> } = EventData, _Context) ->
     z_email_server:delivery_report(relayed, Recipient, MessageId, StatusMessage);
 handle_event(#{ <<"event">> := <<"opened">> } = EventData, Context) ->
     Recipient = maps:get(<<"recipient">>, EventData),
-    lager:info("[mailgun] Opened email by ~s", [ Recipient ]),
+    ?LOG_INFO("[mailgun] Opened email by ~s", [ Recipient ]),
     m_email_status:mark_read(Recipient, Context);
 handle_event(#{ <<"event">> := <<"clicked">> } = EventData, Context) ->
     Recipient = maps:get(<<"recipient">>, EventData),
-    lager:info("[mailgun] Clicked email by ~s", [ Recipient ]),
+    ?LOG_INFO("[mailgun] Clicked email by ~s", [ Recipient ]),
     m_email_status:mark_read(Recipient, Context);
 handle_event(#{ <<"event">> := <<"failed">> } = EventData, _Context) ->
     % Failure
@@ -105,13 +105,13 @@ handle_event(#{ <<"event">> := <<"failed">> } = EventData, _Context) ->
             z_email_server:delivery_report(permanent_failure, Recipient, MessageId, StatusMessage);
         LogLevel ->
             % Unknown
-            lager:warning("[mailgun] Unknown log level on failed email: ~p", [ LogLevel ]),
+            ?LOG_WARNING("[mailgun] Unknown log level on failed email: ~p", [ LogLevel ]),
             ok
     end;
 handle_event(#{ <<"event">> := <<"complained">> } = EventData, Context) ->
     % Spam complaint -- disable user with a permanent failure
     Recipient = maps:get(<<"recipient">>, EventData),
-    lager:warning("[mailgun] Spam complaint from ~s", [ Recipient ]),
+    ?LOG_WARNING("[mailgun] Spam complaint from ~s", [ Recipient ]),
     z_notifier:notify(
         #email_failed{
             recipient = Recipient,
@@ -121,7 +121,7 @@ handle_event(#{ <<"event">> := <<"complained">> } = EventData, Context) ->
         Context);
 handle_event(#{ <<"event">> := <<"unsubscribed">> } = EventData, _Context) ->
     Recipient = maps:get(<<"recipient">>, EventData, <<>>),
-    lager:warning("[mailgun] Unsubscribed event from ~s [unhandled]", [ Recipient ]),
+    ?LOG_WARNING("[mailgun] Unsubscribed event from ~s [unhandled]", [ Recipient ]),
     ok;
 handle_event(_Event, _Context) ->
     ok.

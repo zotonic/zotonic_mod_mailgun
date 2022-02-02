@@ -63,7 +63,7 @@ observe_email_send_encoded(#email_send_encoded{
 
 send_email(MsgId, To, EncodedEmail, Context) ->
     ApiUrl = mailgun_api_url(Context),
-    lager:info("[smtp] Sending email to <~s> (~s), via mailgun \"~s\"",
+    ?LOG_INFO("[smtp] Sending email to <~s> (~s), via mailgun \"~s\"",
                [To, MsgId, ApiUrl]),
     PostData = [
         #{
