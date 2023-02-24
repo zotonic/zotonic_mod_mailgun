@@ -93,8 +93,7 @@ handle_event(#{ <<"event">> := <<"failed">> } = EventData, _Context) ->
     Recipient = maps:get(<<"recipient">>, EventData),
     Message = maps:get(<<"message">>, EventData, #{}),
     Headers = maps:get(<<"headers">>, Message, #{}),
-    MessageId = maps:get(<<"message-id">>, Headers,
-            maps:get(<<"id">>, EventData)),
+    MessageId = maps:get(<<"message-id">>, Headers, maps:get(<<"id">>, EventData, <<>>)),
     StatusMessage = extract_status_message(maps:get(<<"delivery-status">>, EventData)),
     case maps:get(<<"log-level">>, EventData) of
         <<"warn">> ->
@@ -112,11 +111,16 @@ handle_event(#{ <<"event">> := <<"complained">> } = EventData, Context) ->
     % Spam complaint -- disable user with a permanent failure
     Recipient = maps:get(<<"recipient">>, EventData),
     ?LOG_WARNING("[mailgun] Spam complaint from ~s", [ Recipient ]),
+    Message = maps:get(<<"message">>, EventData, #{}),
+    Headers = maps:get(<<"headers">>, Message, #{}),
+    MessageId = maps:get(<<"message-id">>, Headers, maps:get(<<"id">>, EventData, <<>>)),
     z_notifier:notify(
         #email_failed{
+            message_nr = MessageId,
             recipient = Recipient,
             is_final = true,
-            status = <<"Spam complaint">>
+            status = <<"Spam complaint">>,
+            reason = error
         },
         Context);
 handle_event(#{ <<"event">> := <<"unsubscribed">> } = EventData, _Context) ->
