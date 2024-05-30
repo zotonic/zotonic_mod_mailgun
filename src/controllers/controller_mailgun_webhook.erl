@@ -1,8 +1,9 @@
 %% @author Marc Worrell <marc@worrell.nl>
-%% @copyright 2020-2021 Maximonster Interactive Things
+%% @copyright 2020-2024 Maximonster Interactive Things
 %% @doc Handle mailgun callbacks
+%% @end
 
-%% Copyright 2020-2021 Maximonster Interactive Things
+%% Copyright 2020-2024 Maximonster Interactive Things
 %%
 %% Licensed under the Apache License, Version 2.0 (the "License");
 %% you may not use this file except in compliance with the License.
@@ -53,12 +54,19 @@ is_authorized(Context) ->
                     Context2 = z_context:set(json, Parsed, Context1),
                     {true, Context2};
                 MySig ->
-                    ?LOG_WARNING("Mailgun webhook: wrong signature ~p, expected ~p",
-                                  [ Sig, MySig ]),
+                    ?LOG_WARNING(#{
+                        in => zotonic_mod_mailgun,
+                        text => <<"Mailgun webhook: wrong signature on event">>,
+                        signature => Sig,
+                        expected => MySig
+                    }),
                     {false, Context1}
             end;
         _ ->
-            ?LOG_WARNING("Mailgun webhook: request without signature"),
+            ?LOG_WARNING(#{
+                in => zotonic_mod_mailgun,
+                text => <<"Mailgun webhook: no signature on event">>
+            }),
             {false, Context1}
     end.
 
@@ -82,11 +90,19 @@ handle_event(#{ <<"event">> := <<"delivered">> } = EventData, _Context) ->
     z_email_server:delivery_report(relayed, Recipient, MessageId, StatusMessage);
 handle_event(#{ <<"event">> := <<"opened">> } = EventData, Context) ->
     Recipient = maps:get(<<"recipient">>, EventData),
-    ?LOG_INFO("[mailgun] Opened email by ~s", [ Recipient ]),
+    ?LOG_INFO(#{
+        in => zotonic_mod_mailgun,
+        text => <<"Open event on email via Mailgun">>,
+        recipient => Recipient
+    }),
     m_email_status:mark_read(Recipient, Context);
 handle_event(#{ <<"event">> := <<"clicked">> } = EventData, Context) ->
     Recipient = maps:get(<<"recipient">>, EventData),
-    ?LOG_INFO("[mailgun] Clicked email by ~s", [ Recipient ]),
+    ?LOG_INFO(#{
+        in => zotonic_mod_mailgun,
+        text => <<"Click event on email via Mailgun">>,
+        recipient => Recipient
+    }),
     m_email_status:mark_read(Recipient, Context);
 handle_event(#{ <<"event">> := <<"failed">> } = EventData, _Context) ->
     % Failure
@@ -95,7 +111,7 @@ handle_event(#{ <<"event">> := <<"failed">> } = EventData, _Context) ->
     Headers = maps:get(<<"headers">>, Message, #{}),
     MessageId = maps:get(<<"message-id">>, Headers, maps:get(<<"id">>, EventData, <<>>)),
     StatusMessage = extract_status_message(maps:get(<<"delivery-status">>, EventData)),
-    case maps:get(<<"log-level">>, EventData) of
+    case maps:get(<<"log-level">>, EventData, undefined) of
         <<"warn">> ->
             % Temp failure
             z_email_server:delivery_report(temporary_failure, Recipient, MessageId, StatusMessage);
@@ -104,16 +120,26 @@ handle_event(#{ <<"event">> := <<"failed">> } = EventData, _Context) ->
             z_email_server:delivery_report(permanent_failure, Recipient, MessageId, StatusMessage);
         LogLevel ->
             % Unknown
-            ?LOG_WARNING("[mailgun] Unknown log level on failed email: ~p", [ LogLevel ]),
-            ok
+            ?LOG_WARNING(#{
+                in => zotonic_mod_mailgun,
+                text => <<"Unknown or missing log level on failed email - assuming temporary_failure">>,
+                log_level => LogLevel,
+                event_data => EventData
+            }),
+            z_email_server:delivery_report(temporary_failure, Recipient, MessageId, StatusMessage)
     end;
 handle_event(#{ <<"event">> := <<"complained">> } = EventData, Context) ->
     % Spam complaint -- disable user with a permanent failure
     Recipient = maps:get(<<"recipient">>, EventData),
-    ?LOG_WARNING("[mailgun] Spam complaint from ~s", [ Recipient ]),
     Message = maps:get(<<"message">>, EventData, #{}),
     Headers = maps:get(<<"headers">>, Message, #{}),
     MessageId = maps:get(<<"message-id">>, Headers, maps:get(<<"id">>, EventData, <<>>)),
+    ?LOG_WARNING(#{
+        in => zotonic_mod_mailgun,
+        text => <<"Spam complaint received via Mailgun">>,
+        recipient => Recipient,
+        message_id => MessageId
+    }),
     z_notifier:notify(
         #email_failed{
             message_nr = MessageId,
@@ -125,7 +151,11 @@ handle_event(#{ <<"event">> := <<"complained">> } = EventData, Context) ->
         Context);
 handle_event(#{ <<"event">> := <<"unsubscribed">> } = EventData, _Context) ->
     Recipient = maps:get(<<"recipient">>, EventData, <<>>),
-    ?LOG_WARNING("[mailgun] Unsubscribed event from ~s [unhandled]", [ Recipient ]),
+    ?LOG_WARNING(#{
+        in => zotonic_mod_mailgun,
+        text => <<"Unsubscribed event received via Mailgun - ignored">>,
+        recipient => Recipient
+    }),
     ok;
 handle_event(_Event, _Context) ->
     ok.
