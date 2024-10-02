@@ -113,8 +113,9 @@ handle_event(#{ <<"event">> := <<"failed">> } = EventData, _Context) ->
     StatusMessage = extract_status_message(maps:get(<<"delivery-status">>, EventData)),
     case maps:get(<<"severity">>, EventData, undefined) of
         <<"permanent">> ->
-            % Permanent failure
             z_email_server:delivery_report(permanent_failure, Recipient, MessageId, StatusMessage);
+        <<"temporary">> ->
+            z_email_server:delivery_report(temporary_failure, Recipient, MessageId, StatusMessage);
         LogLevel ->
             % Unknown
             ?LOG_WARNING(#{
