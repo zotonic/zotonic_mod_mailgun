@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:34./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:35
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:38./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:39
 msgid ""
 "API Key"
 msgstr ""
@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:31
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:33
 msgid ""
 "Default"
 msgstr ""
@@ -54,19 +54,25 @@ msgid ""
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:31
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:32
 msgid ""
 "Endpoint for Mailgun API requests."
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:36
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:34
+msgid ""
+"For Europe, use: <tt>{api}</tt>"
+msgstr ""
+""
+
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:40
 msgid ""
 "Key for signing API requests."
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:41
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:45
 msgid ""
 "Key for signing calls from Mailgun to the Zotonic webhook."
 msgstr ""
@@ -78,13 +84,13 @@ msgid ""
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:44
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:48
 msgid ""
 "Save"
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:51
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:55
 msgid ""
 "The webhook URL is:"
 msgstr ""
@@ -97,7 +103,7 @@ msgid ""
 msgstr ""
 ""
 
-#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:39./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:40
+#: ./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:43./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:44
 msgid ""
 "Webhook Secret"
 msgstr ""

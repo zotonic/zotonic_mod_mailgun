@@ -6,23 +6,23 @@
 # NB: Consider using poEdit <http://poedit.sourceforge.net>
 #
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Mailgun Zotonic module\n"
+"Project-Id-Version: \n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: 2024-11-17 09:46+0100\n"
+"PO-Revision-Date: 2024-11-17 09:49+0100\n"
 "Last-Translator: Marc Worrell <marc@worrell.nl>\n"
 "Language-Team: \n"
-"Language: nl\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.5\n"
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:38./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:39
 msgid "API Key"
-msgstr "API-sleutel"
+msgstr "API-Schlüssel"
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:29./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:30
 msgid "API URL"
@@ -32,37 +32,41 @@ msgstr "API URL"
 msgid ""
 "Configure the general proxy settings to enable Mailgun as an email relay."
 msgstr ""
-"Configureer de algemene proxy-instellingen om Mailgun in te schakelen als e-"
-"mailrelay."
+"Konfigurier die allgemeinen Proxy-Einstellungen, um Mailgun als E-Mail-"
+"Relay zu aktivieren."
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:33
 msgid "Default"
-msgstr "Standaard"
+msgstr "Standard"
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:23./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:24
 msgid "Domain"
-msgstr "Domeinnaam"
+msgstr "Domain"
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:25
+#, fuzzy
 msgid "Domain as configured in Mailgun."
-msgstr "Domein zoals geconfigureerd in Mailgun."
+msgstr "Domäne wie in Mailgun konfiguriert."
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:32
+#, fuzzy
 msgid "Endpoint for Mailgun API requests."
-msgstr "Eindpunt voor Mailgun API verzoeken."
+msgstr "Endpunkt für Mailgun API-Anfragen."
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:34
 msgid "For Europe, use: <tt>{api}</tt>"
-msgstr "Gebruik voor Europa: <tt>{api}</tt>"
+msgstr "Für Europa, verwende: <tt>{api}</tt>"
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:40
+#, fuzzy
 msgid "Key for signing API requests."
-msgstr "Key voor het ondertekenen van API verzoeken."
+msgstr "Schlüssel zum Signieren von API-Anfragen."
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:45
+#, fuzzy
 msgid "Key for signing calls from Mailgun to the Zotonic webhook."
 msgstr ""
-"Key voor het ondertekenen van aanroepen van Mailgun naar de Zotonic webhook."
+"Schlüssel zum Signieren von Aufrufen von Mailgun an den Zotonic-Webhook."
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:6
 msgid "Mailgun"
@@ -70,24 +74,27 @@ msgstr "Mailgun"
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:48
 msgid "Save"
-msgstr "Bewaar"
+msgstr "Speichern"
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:55
+#, fuzzy
 msgid "The webhook URL is:"
-msgstr "De webhook URL is:"
+msgstr "Die Webhook-URL lautet:"
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:13
 msgid ""
 "To receive Mailgun status updates and synchronize email blocks, add the "
 "Mailgun API secrets below."
 msgstr ""
-"Om Mailgun status updates te ontvangen en e-mail blokkades te "
-"synchroniseren, voeg de Mailgun API geheimen hieronder toe."
+"Um Mailgun-Status-Updates zu erhalten und E-Mail-Blöcke zu "
+"synchronisieren, füge die Mailgun-API-Geheimnisse unten hinzu."
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:43./_build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:44
+#, fuzzy
 msgid "Webhook Secret"
-msgstr "Webhook Secret"
+msgstr "Webhook Geheimnis"
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:11
+#, fuzzy
 msgid "is a relay for email."
-msgstr "is een relay voor e-mail."
+msgstr "ist ein Relais für E-Mails."
