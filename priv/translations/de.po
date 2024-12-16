@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: 2024-11-17 09:49+0100\n"
+"PO-Revision-Date: 2024-12-16 13:58+0100\n"
 "Last-Translator: Marc Worrell <marc@worrell.nl>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -44,9 +44,8 @@ msgid "Domain"
 msgstr "Domain"
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:25
-#, fuzzy
 msgid "Domain as configured in Mailgun."
-msgstr "Domäne wie in Mailgun konfiguriert."
+msgstr "Domain wie in Mailgun konfiguriert."
 
 #: _build/default/lib/zotonic_mod_mailgun/priv/templates/_admin_config_email_panel.tpl:32
 #, fuzzy

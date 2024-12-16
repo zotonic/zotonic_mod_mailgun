@@ -143,7 +143,7 @@ handle_event(#{ <<"event">> := <<"complained">> } = EventData, Context) ->
             message_nr = MessageId,
             recipient = Recipient,
             is_final = true,
-            status = <<"Spam complaint">>,
+            status = <<"605 Spam complaint">>,
             reason = error
         },
         Context);
