@@ -159,12 +159,40 @@ handle_event(_Event, _Context) ->
     ok.
 
 
-extract_status_message(#{ <<"message">> := Message }) when Message =/= <<>> ->
-    map_status_message(Message);
-extract_status_message(#{ <<"code">> := Code, <<"description">> := Desc }) ->
+extract_status_message(#{
+        <<"code">> := Code,
+        <<"enhanced-code">> := EnhancedCode,
+        <<"message">> := Message
+    }) when Message =/= <<>>, is_binary(Message), is_binary(EnhancedCode), is_integer(Code) ->
     iolist_to_binary([
-            z_convert:to_binary(Code), " ", map_status_message(Desc)
-        ]);
+        z_convert:to_binary(Code), " ",
+        EnhancedCode, " ",
+        map_status_message(Message)
+    ]);
+extract_status_message(#{
+        <<"code">> := Code,
+        <<"message">> := Message
+    }) when Message =/= <<>>,  is_binary(Message), is_integer(Code) ->
+    iolist_to_binary([
+        z_convert:to_binary(Code), " ",
+        map_status_message(Message)
+    ]);
+extract_status_message(#{
+        <<"message">> := Message
+    }) when Message =/= <<>>, is_binary(Message) ->
+    map_status_message(Message);
+extract_status_message(#{
+        <<"code">> := Code,
+        <<"description">> := Desc
+    }) when is_integer(Code), is_binary(Desc) ->
+    iolist_to_binary([
+        z_convert:to_binary(Code), " ",
+        map_status_message(Desc)
+    ]);
+extract_status_message(#{
+        <<"description">> := Desc
+    }) when is_binary(Desc) ->
+    Desc;
 extract_status_message(_) ->
     <<>>.
 
