@@ -18,6 +18,56 @@
 %% limitations under the License.
 
 -module(controller_mailgun_webhook).
+-moduledoc(#{
+    zotonic_keywords => [
+        "reference", "backend_developer", "controller", "email_delivery",
+        "api_and_integration", "http", "json"
+    ]
+}).
+-moduledoc("
+Receive Mailgun event callbacks at `/mailgun-webhook` (dispatch name
+`mailgun_webhook`). Accepts `POST` with content type `application/json`.
+Generate the site's callback URL with
+`{% url mailgun_webhook absolute_url %}` and configure it in Mailgun.
+
+## Authentication and payload
+
+Set the per-site `mod_mailgun.webhook_secret` to the webhook signing key.
+The JSON body must contain a `signature` object with `timestamp`, `token`
+and `signature` fields. The controller computes HMAC-SHA256 over the timestamp
+concatenated with the token and compares its lowercase hexadecimal encoding
+with the supplied signature. A missing signature object or a mismatching
+signature fails authorization. No Zotonic login or user ACL check is required.
+The controller does not check timestamp freshness or token reuse.
+
+The `event-data` object contains the event fields. For example, an opened
+event has `event` set to `opened` and `recipient` set to the email address;
+it must be accompanied by the signature object in the enclosing request.
+
+## Event mapping
+
+| Event | Effect |
+| --- | --- |
+| `delivered` | Calls `z_email_server:delivery_report/4` with `relayed`. |
+| `opened`, `clicked` | Calls `m_email_status:mark_read/2` for the recipient. |
+| `failed` | Reports `permanent_failure` for permanent severity, otherwise `temporary_failure`. Unknown or missing severity is logged. |
+| `complained` | Emits `email_failed` with `is_final = true`, reason `error` and status `605 Spam complaint`. |
+| `unsubscribed` | Logs the event and ignores it. |
+| Other events | Ignored. |
+
+Delivery and failure reports use `recipient`, `message.headers.message-id`
+and `delivery-status`. Failure and complaint events fall back to the event
+`id` when the message ID is absent. Delivery status text is derived from the
+code, enhanced code, message or description when available.
+
+Requests without an `event-data` map are acknowledged without processing.
+Recognized events require their expected fields; this endpoint does not
+validate a complete event schema before dispatching.
+
+The exported `handle_event/2` function accepts an event-data map and a site
+context directly. It bypasses request signature verification and is intended
+for trusted Erlang callers; its return value depends on the event handler.
+").
 
 -author("Marc Worrell <marc@worrell.nl>").
 

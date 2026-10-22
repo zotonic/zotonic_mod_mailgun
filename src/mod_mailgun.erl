@@ -1,8 +1,9 @@
 %% @author Marc Worrell <marc@worrell.nl>
-%% @copyright 2020-2021 Maximonster Interactive Things
+%% @copyright 2020-2024 Maximonster Interactive Things
 %% @doc Integration of mailgun as email relay.
+%% @end
 
-%% Copyright 2020-2021 Maximonster Interactive Things
+%% Copyright 2020-2024 Maximonster Interactive Things
 %%
 %% Licensed under the Apache License, Version 2.0 (the "License");
 %% you may not use this file except in compliance with the License.
@@ -17,6 +18,66 @@
 %% limitations under the License.
 
 -module(mod_mailgun).
+-moduledoc(#{
+    zotonic_keywords => [
+        "reference", "site_administrator", "backend_developer", "module",
+        "email_delivery", "configuration", "api_and_integration", "send_and_receive"
+    ]
+}).
+-moduledoc("
+Relay outgoing email through the Mailgun HTTP API and receive delivery and
+engagement events through a signed webhook. Requires `mod_email_status`.
+
+## Setup and configuration
+
+Enable `mod_mailgun` on the site. Configure its per-site `m_config` values in
+the Mailgun panel under **System > Mail settings**. Saving these settings
+requires an administrator with configuration-edit permission:
+
+| Key | Meaning |
+| --- | --- |
+| `mod_mailgun.domain` | Sending domain configured in Mailgun. |
+| `mod_mailgun.api_url` | Full API base URL including the domain, without a trailing slash. Defaults to `https://api.mailgun.net/v3/` followed by `domain`. |
+| `mod_mailgun.api_key` | API key used for HTTP Basic authentication with username `api`. |
+| `mod_mailgun.webhook_secret` | Signing key used to verify incoming webhook requests. |
+
+For example, a domain of `mg.example.com` uses the default API base URL
+`https://api.mailgun.net/v3/mg.example.com`. The administration panel also
+provides a regional endpoint example. Configure both the sending domain (or a
+complete API URL) and the API key before sending mail.
+
+## Outgoing mail and address status
+
+The `email_send_encoded` observer posts the encoded MIME message to
+`<api_url>/messages.mime`. This path uses the HTTP API and does not require
+SMTP relay settings. If both `api_url` and `api_key` are empty, the observer
+returns `undefined`, leaving delivery to other handlers. Setting either value
+activates the API path; this presence check does not verify the credentials or
+service availability. A domain alone does not activate it.
+
+An HTTP 200 response means Mailgun accepted the message. Other HTTP responses
+are returned as temporary failures; delivery to the recipient is reported
+separately by the webhook.
+
+Manual `email_status` changes synchronize the address with Mailgun's bounce
+list: blocking adds it and clearing removes it. Non-manual status changes are
+ignored. The exported `mailgun_block/2` and `mailgun_clear/2` helpers return the
+HTTP client result, or `ok` when the API is unconfigured. These Erlang helpers
+do not perform an ACL check; callers must authorize manual changes.
+
+## Webhook
+
+Configure Mailgun to post events to the site's absolute `/mailgun-webhook`
+URL and set `webhook_secret` to the matching signing key. The dispatch name
+is `mailgun_webhook`; in templates use `{% url mailgun_webhook absolute_url %}`.
+The endpoint accepts JSON POST requests authenticated by an HMAC signature,
+without requiring a Zotonic user session.
+
+Delivered messages are reported as `relayed`, opened and clicked events mark
+the address as read, and failed events update delivery status. Spam complaints
+emit a final `email_failed` notification. Unsubscribe events are logged and
+ignored. See `controller_mailgun_webhook` for the event mapping.
+").
 
 -mod_title("Mailgun email relay").
 -mod_description("Integrate mailgun as email relay.").
@@ -63,8 +124,13 @@ observe_email_send_encoded(#email_send_encoded{
 
 send_email(MsgId, To, EncodedEmail, Context) ->
     ApiUrl = mailgun_api_url(Context),
-    ?LOG_INFO("[smtp] Sending email to <~s> (~s), via mailgun \"~s\"",
-               [To, MsgId, ApiUrl]),
+    ?LOG_INFO(#{
+        in => zotonic_mod_mailgun,
+        text => <<"Relaying email via mailgun">>,
+        recipient => To,
+        message_id => MsgId,
+        api_url => ApiUrl
+    }),
     PostData = [
         #{
             name => <<"to">>,
@@ -95,7 +161,7 @@ send_email(MsgId, To, EncodedEmail, Context) ->
                 <<"id">> := MailgunMsgId,
                 <<"message">> := Message
             } = z_json:decode(Payload),
-            {ok, <<"[Mailgun-API] ", Message/binary, " ", MailgunMsgId/binary>>};
+            {ok, <<"200 [Mailgun-API] ", Message/binary, " ", MailgunMsgId/binary>>};
         {ok, {{_, EAccess, _}, _Headers, _Payload}}
             when EAccess =:= 401;
                  EAccess =:= 403 ->
